@@ -124,7 +124,7 @@ func TestCreateShortURL(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if w.Header()["Content-Type"][0] == `application/json; charset=utf-8` {
+			if w.Header()["Content-Type"][0] == "application/json; charset=utf-8" {
 				assert.JSONEq(t, tt.want.response, string(resBody))
 			} else {
 				assert.Equal(t, tt.want.response, string(resBody))
