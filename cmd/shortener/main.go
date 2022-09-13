@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/AllStars123/urlshortner/internal/handlers"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/url"
+
+	"github.com/AllStars123/urlshortner/internal/handlers"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {

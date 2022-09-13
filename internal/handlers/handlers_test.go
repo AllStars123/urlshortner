@@ -1,14 +1,15 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 func setupRuter(data url.Values) *gin.Engine {
@@ -38,8 +39,8 @@ func TestRetriveShortURL(t *testing.T) {
 			shortUrl: "tN1fptfy6FNYOpaVrMtQuusk1Po=",
 			want: want{
 				contentType: "application/json; charset=utf-8",
-				statusCode:  404,
-				response:    `{"detail":"not found"}`,
+				statusCode:  http.StatusNotFound,
+				response:    `{"errorDetails":"not found"}`,
 			},
 		},
 		{
@@ -49,7 +50,7 @@ func TestRetriveShortURL(t *testing.T) {
 			shortUrl: "tN1fptfy6FNYOpaVrMtQuusk1Po=",
 			want: want{
 				contentType: "text/plain; charset=utf-8",
-				statusCode:  307,
+				statusCode:  http.StatusTemporaryRedirect,
 				response:    "",
 			},
 		},
@@ -96,8 +97,8 @@ func TestCreateShortURL(t *testing.T) {
 			body:    "https://www.ilovepdf.com/ru",
 			want: want{
 				contentType: "text/plain; charset=utf-8",
-				statusCode:  201,
-				response:    "http://localhost:8080/t4oQqVMwG34xz4LLJELnjySD7aM=",
+				statusCode:  http.StatusCreated,
+				response:    "http://localhost:8080/t4oQqVMwG3",
 			},
 		},
 		{
@@ -105,8 +106,18 @@ func TestCreateShortURL(t *testing.T) {
 			request: "test",
 			want: want{
 				contentType: "text/plain",
-				statusCode:  404,
+				statusCode:  http.StatusNotFound,
 				response:    "404 page not found",
+			},
+		},
+		{
+			name:    "Incorrect URL",
+			request: "",
+			body:    "kl.www.ilovepdf.com/ru",
+			want: want{
+				contentType: "application/json; charset=utf-8",
+				statusCode:  http.StatusBadRequest,
+				response:    `{"error": "parse \"kl.www.ilovepdf.com/ru\": invalid URI for request"}`,
 			},
 		},
 	}
