@@ -28,15 +28,15 @@ func TestRetriveShortURL(t *testing.T) {
 	tests := []struct {
 		name     string
 		request  string
-		longUrl  string
-		shortUrl string
+		longURL  string
+		shortURL string
 		want     want
 	}{
 		{
 			name:     "Get with incorrect id",
 			request:  "65463fv58Wr3hdskjIzm2*nmH2zA628Bg=",
-			longUrl:  "https://www.ilovepdf.com/ru",
-			shortUrl: "tN1fptfy6FNYOpaVrMtQuusk1Po=",
+			longURL:  "https://www.ilovepdf.com/ru",
+			shortURL: "tN1fptfy6FNYOpaVrMtQuusk1Po=",
 			want: want{
 				contentType: "application/json; charset=utf-8",
 				statusCode:  http.StatusNotFound,
@@ -46,8 +46,8 @@ func TestRetriveShortURL(t *testing.T) {
 		{
 			name:     "Get with correct id",
 			request:  "tN1fptfy6FNYOpaVrMtQuusk1Po=",
-			longUrl:  "https://www.ilovepdf.com/ru",
-			shortUrl: "tN1fptfy6FNYOpaVrMtQuusk1Po=",
+			longURL:  "https://www.ilovepdf.com/ru",
+			shortURL: "tN1fptfy6FNYOpaVrMtQuusk1Po=",
 			want: want{
 				contentType: "text/plain; charset=utf-8",
 				statusCode:  http.StatusTemporaryRedirect,
@@ -57,7 +57,7 @@ func TestRetriveShortURL(t *testing.T) {
 	}
 	data := storages.URLStorage{}
 	for _, tt := range tests {
-		data.SetURL(tt.shortUrl, tt.longUrl)
+		data.SetURL(tt.shortURL, tt.longURL)
 		router := setupRuter(data)
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/"+tt.request, nil)
