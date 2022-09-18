@@ -4,15 +4,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 
+	"github.com/AllStars123/urlshortner/internal/storages"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
-func setupRuter(data url.Values) *gin.Engine {
+func setupRuter(data storages.URLStorage) *gin.Engine {
 	r := gin.Default()
 	r.GET("/:id", RetriveShortURL(data))
 	r.POST("/", CreateShortURL(data))
@@ -55,9 +55,9 @@ func TestRetriveShortURL(t *testing.T) {
 			},
 		},
 	}
-	data := url.Values{}
+	data := storages.URLStorage{}
 	for _, tt := range tests {
-		data.Set(tt.shortUrl, tt.longUrl)
+		data.SetURL(tt.shortUrl, tt.longUrl)
 		router := setupRuter(data)
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/"+tt.request, nil)
@@ -98,7 +98,7 @@ func TestCreateShortURL(t *testing.T) {
 			want: want{
 				contentType: "text/plain; charset=utf-8",
 				statusCode:  http.StatusCreated,
-				response:    "http://localhost:8080/t4oQqVMwG3",
+				response:    "http://localhost:8080/qyfwSuz6En",
 			},
 		},
 		{
@@ -121,7 +121,7 @@ func TestCreateShortURL(t *testing.T) {
 			},
 		},
 	}
-	data := url.Values{}
+	data := storages.URLStorage{}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			router := setupRuter(data)
