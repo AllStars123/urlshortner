@@ -21,9 +21,9 @@ func GetURL(shortURL string, data storages.URLStorage) (string, error) {
 	return result, nil
 }
 
-func Shorten(longUrl string) string {
+func Shorten(longURL string) string {
 	hasher := sha1.New()
-	hasher.Write([]byte(longUrl))
+	hasher.Write([]byte(longURL))
 	urlHash := base64.URLEncoding.EncodeToString(hasher.Sum(nil))[:10]
 	return urlHash
 }
