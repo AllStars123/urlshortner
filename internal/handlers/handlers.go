@@ -6,10 +6,11 @@ import (
 	"net/url"
 
 	"github.com/AllStars123/urlshortner/internal/shortner"
+	"github.com/AllStars123/urlshortner/internal/storages"
 	"github.com/gin-gonic/gin"
 )
 
-func RetriveShortURL(data url.Values) func(c *gin.Context) {
+func RetriveShortURL(data storages.URLStorage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		result := map[string]string{}
 		long, err := shortner.GetURL(c.Param("id"), data)
@@ -23,7 +24,7 @@ func RetriveShortURL(data url.Values) func(c *gin.Context) {
 	}
 }
 
-func CreateShortURL(data url.Values) func(c *gin.Context) {
+func CreateShortURL(data storages.URLStorage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		result := map[string]string{}
 		defer c.Request.Body.Close()
