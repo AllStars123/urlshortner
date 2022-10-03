@@ -1,44 +1,81 @@
 package handlers
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 
-	"github.com/AllStars123/urlshortner/internal/shortner"
-	"github.com/AllStars123/urlshortner/internal/storages"
 	"github.com/gin-gonic/gin"
+
+	"github.com/AllStars123/urlshortner/internal/models"
 )
 
-func RetriveShortURL(data storages.URLStorage) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		result := map[string]string{}
-		long, err := shortner.GetURL(c.Param("id"), data)
-		if err != nil {
-			result["errorDetails"] = err.Error()
-			c.IndentedJSON(http.StatusNotFound, result)
-			return
-		}
-		c.Header("Location", long)
-		c.String(http.StatusTemporaryRedirect, "")
+type PostURL struct {
+	URL string
+}
+
+type Handler struct {
+	repo    models.RepositoryInterface
+	baseURL string
+}
+
+func New(repo models.RepositoryInterface, baseURL string) *Handler {
+	return &Handler{
+		repo:    repo,
+		baseURL: baseURL,
 	}
 }
 
-func CreateShortURL(data storages.URLStorage) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		result := map[string]string{}
-		defer c.Request.Body.Close()
-		body, err := ioutil.ReadAll(c.Request.Body)
-		if err != nil {
-			c.IndentedJSON(http.StatusBadRequest, result)
-			return
-		}
-		_, err = url.ParseRequestURI(string(body))
-		if err != nil {
-			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		short := shortner.AddURL(string(body), data)
-		c.String(http.StatusCreated, "http://localhost:8080/"+short)
+func (h *Handler) RetriveShortURL(c *gin.Context) {
+	result := map[string]string{}
+	long, err := h.repo.GetURL(c.Param("id"))
+
+	if err != nil {
+		result["detail"] = err.Error()
+		c.IndentedJSON(http.StatusNotFound, result)
+		return
 	}
+
+	c.Header("Location", long)
+	c.String(http.StatusTemporaryRedirect, "")
+}
+
+func (h *Handler) CreateShortURL(c *gin.Context) {
+	result := map[string]string{}
+	defer c.Request.Body.Close()
+
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if err != nil {
+		result["detail"] = "Bad request"
+		c.IndentedJSON(http.StatusBadRequest, result)
+		return
+	}
+	short := h.repo.AddURL(string(body))
+	c.String(http.StatusCreated, h.baseURL+short)
+}
+
+func (h *Handler) ShortenURL(c *gin.Context) {
+	result := map[string]string{}
+	var url PostURL
+
+	defer c.Request.Body.Close()
+
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if err != nil {
+		result["detail"] = "Bad request"
+		c.IndentedJSON(http.StatusBadRequest, result)
+		return
+	}
+	json.Unmarshal(body, &url)
+	if url.URL == "" {
+		result["detail"] = "Bad request"
+		c.IndentedJSON(http.StatusBadRequest, result)
+		return
+	}
+
+	short := h.repo.AddURL(url.URL)
+	result["result"] = h.baseURL + short
+	c.IndentedJSON(http.StatusCreated, result)
 }
