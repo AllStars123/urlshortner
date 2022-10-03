@@ -58,8 +58,8 @@ func TestRetriveShortURL(t *testing.T) {
 		},
 		{
 			name:    "GET with correct id",
-			request: "98fv58Wr3hGGIzm2-aH2zA628Ng=",
-			result:  "98fv58Wr3hGGIzm2-aH2zA628Ng=",
+			request: "tN1fptfy6FNYOpaVrMtQuusk1Po=",
+			result:  "tN1fptfy6FNYOpaVrMtQuusk1Po=",
 			err:     nil,
 			want: want{
 				statusCode:  307,
@@ -179,14 +179,14 @@ func TestCreateShortURL(t *testing.T) {
 
 func TestShortenURL(t *testing.T) {
 	type want struct {
-		code        int
+		statusCode  int
 		response    string
 		contentType string
 	}
 
 	tests := []struct {
 		name    string
-		query   string
+		request string
 		body    string
 		rawData string
 		result  string
@@ -194,24 +194,24 @@ func TestShortenURL(t *testing.T) {
 	}{
 		{
 			name:    "correct POST",
-			query:   "api/shorten",
+			request: "api/shorten",
 			body:    `{"url": "https://www.ilovepdf.com/ru"}`,
 			rawData: "https://www.ilovepdf.com/ru",
 			result:  "98fv58Wr3hGGIzm2-aH2zA628Ng=",
 			want: want{
-				code:        201,
+				statusCode:  201,
 				response:    `{"result": "http://localhost:8080/98fv58Wr3hGGIzm2-aH2zA628Ng="}`,
 				contentType: `application/json; charset=utf-8`,
 			},
 		},
 		{
 			name:    "incorrect POST",
-			query:   "api/shorten",
+			request: "api/shorten",
 			body:    `{"url2": "https://www.ilovepdf.com/ru"}`,
 			rawData: "https://www.ilovepdf.com/ru",
 			result:  "98fv58Wr3hGGIzm2-aH2zA628Ng=",
 			want: want{
-				code:        400,
+				statusCode:  400,
 				response:    `{"detail": "Bad request"}`,
 				contentType: `application/json; charset=utf-8`,
 			},
@@ -228,13 +228,13 @@ func TestShortenURL(t *testing.T) {
 
 			body := strings.NewReader(tt.body)
 			w := httptest.NewRecorder()
-			fmt.Println(tt.query)
-			req, _ := http.NewRequest(http.MethodPost, "/"+tt.query, body)
+			fmt.Println(tt.request)
+			req, _ := http.NewRequest(http.MethodPost, "/"+tt.request, body)
 			router.ServeHTTP(w, req)
 
 			assert.Equal(t, tt.want.contentType, w.Header()["Content-Type"][0])
 
-			assert.Equal(t, tt.want.code, w.Code)
+			assert.Equal(t, tt.want.statusCode, w.Code)
 			resBody, err := ioutil.ReadAll(w.Body)
 			if err != nil {
 				t.Fatal(err)
