@@ -38,7 +38,7 @@ func New() *config {
 	}
 	flagServerAdress := flag.String("a", ServerAdress, "server adress")
 	flagBaseURL := flag.String("b", BaseURL, "base url")
-	flagFilePath := flag.String("c", FileName, "file path")
+	flagFilePath := flag.String("f", FileName, "file path")
 	flag.Parse()
 
 	if *flagServerAdress != ServerAdress {
