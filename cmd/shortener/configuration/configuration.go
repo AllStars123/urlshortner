@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	FileName     = "urls.log"
-	FilePerm     = 0755
-	ServerAdress = "localhost:8080"
-	BaseURL      = "http://localhost:8080/"
+	DefaultFileName      = "urls.log"
+	DefaultFilePerm      = 0755
+	DefaultServerAddress = "localhost:8080"
+	DefaultBaseURL       = "http://localhost:8080/"
 )
 
 type config struct {
@@ -25,9 +25,9 @@ type config struct {
 
 func New() *config {
 	cfg := config{
-		ServerAdress: ServerAdress,
-		FilePath:     FileName,
-		BaseURL:      BaseURL,
+		ServerAdress: DefaultServerAddress,
+		FilePath:     DefaultFileName,
+		BaseURL:      DefaultBaseURL,
 	}
 	cfg.BaseURL = fmt.Sprintf("http://%s/", cfg.ServerAdress)
 
@@ -36,25 +36,25 @@ func New() *config {
 	if err != nil {
 		log.Fatal(err)
 	}
-	flagServerAdress := flag.String("a", ServerAdress, "server adress")
-	flagBaseURL := flag.String("b", BaseURL, "base url")
-	flagFilePath := flag.String("f", FileName, "file path")
+	flagServerAdress := flag.String("a", DefaultServerAddress, "server adress")
+	flagBaseURL := flag.String("b", DefaultBaseURL, "base url")
+	flagFilePath := flag.String("f", DefaultFileName, "file path")
 	flag.Parse()
 
-	if *flagServerAdress != ServerAdress {
+	if *flagServerAdress != DefaultServerAddress {
 		cfg.ServerAdress = *flagServerAdress
 	}
-	if *flagBaseURL != BaseURL {
+	if *flagBaseURL != DefaultBaseURL {
 		cfg.BaseURL = *flagBaseURL
 	}
-	if *flagFilePath != FileName {
+	if *flagFilePath != DefaultFileName {
 		cfg.FilePath = *flagFilePath
 	}
 
-	if cfg.FilePath != FileName {
+	if cfg.FilePath != DefaultFileName {
 		if _, err := os.Stat(filepath.Dir(cfg.FilePath)); os.IsNotExist(err) {
 			log.Println("Creating folder")
-			err := os.Mkdir(filepath.Dir(cfg.FilePath), FilePerm)
+			err := os.Mkdir(filepath.Dir(cfg.FilePath), DefaultFilePerm)
 			if err != nil {
 				log.Printf("Error: %v \n", err)
 			}

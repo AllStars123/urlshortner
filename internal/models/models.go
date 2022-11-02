@@ -26,14 +26,14 @@ func NewRepositoryMap(filePath string) *RepositoryMap {
 		values:   values,
 		filePath: filePath,
 	}
-	file, err := os.OpenFile(filePath, os.O_RDONLY|os.O_CREATE, configuration.FilePerm)
+	file, err := os.OpenFile(filePath, os.O_RDONLY|os.O_CREATE, configuration.DefaultFilePerm)
 	if err != nil {
 		log.Printf("Error with reading file: %v\n", err)
 	}
 	defer file.Close()
 	reader := bufio.NewScanner(file)
 
-	for {
+	for !reader.Scan() {
 		ok, err := repo.readRow(reader)
 
 		if err != nil {
@@ -88,7 +88,7 @@ func (repo *RepositoryMap) readRow(reader *bufio.Scanner) (bool, error) {
 }
 
 func (repo *RepositoryMap) writeRow(longURL string, shortURL string, filePath string) error {
-	file, err := os.OpenFile(repo.filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, configuration.FilePerm)
+	file, err := os.OpenFile(repo.filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, configuration.DefaultFilePerm)
 
 	if err != nil {
 		return err

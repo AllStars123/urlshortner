@@ -31,6 +31,7 @@ func setupRouter(repo models.RepositoryInterface, baseURL string) *gin.Engine {
 	return router
 }
 
+// Не понимаю почему тут падают тесты
 func TestRetriveShortURL(t *testing.T) {
 	type want struct {
 		statusCode  int
