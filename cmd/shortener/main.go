@@ -52,5 +52,5 @@ func main() {
 		cancel()
 	case <-ctx.Done():
 	}
-	server.Shutdown(context.Background())
+	server.Shutdown(ctx)
 }
